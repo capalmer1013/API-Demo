@@ -59,7 +59,7 @@ class User_Account(BaseMixin, db.Model):
 
     @staticmethod
     def update(id, **kw):
-        user = User_Account.query.filter_by(id=userId).first()
+        user = User_Account.query.filter_by(id=id).first()
         for key in kw:
             if key != "id":
                 setattr(user, key, kw[key])
