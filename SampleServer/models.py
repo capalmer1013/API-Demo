@@ -1,11 +1,15 @@
+import uuid
+
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import desc
 from sqlalchemy.sql import func
+from sqlalchemy.dialects import postgresql
 
 db = SQLAlchemy()
 
 
 class BaseMixin(object):
+    id = db.Column(db.Integer, primary_key=True)
     created_at = db.Column(
         db.DateTime(timezone=True), nullable=False, server_default=func.now()
     )
@@ -32,28 +36,38 @@ class BaseMixin(object):
         if obj:
             db.session.delete(obj)
             db.session.commit()
+    
+    @classmethod
+    def getOne(cls, id):
+        return cls.query.filter_by(id=id).first()
+    
+    @classmethod
+    def getAll(cls):
+        return cls.query.all()
 
 class User_Account(BaseMixin, db.Model):
     __tablename__ = "user_account"
-    id = db.Column(
-        db.Integer,
-        unique=True,
-        nullable=False,
-        primary_key=True,
-    )
     username = db.Column(db.String, nullable=False)
+    test = db.Column(db.String, nullable=True)
 
     @staticmethod
-    def update_username(username, userId):
-        userIdMatches = User_Account.query.filter_by(user_id=userId).all()
-        matchFound = False
-        for each in userIdMatches:
-            if each.username != username:
-                db.session.delete(each)
-            else:
-                matchFound = True
-
-        if not matchFound:
-            User_Account.create(user_id=userId, username=username)
-
+    def createUser(username):
+        result = User_Account(username=username)
+        db.session.add(result)
         db.session.commit()
+        return result
+
+    # @staticmethod
+    # def update(userId, **kw):
+    #     userIdMatches = User_Account.query.filter_by(id=userId).all()
+    #     matchFound = False
+    #     for each in userIdMatches:
+    #         if each.username != username:
+    #             db.session.delete(each)
+    #         else:
+    #             matchFound = True
+
+    #     if not matchFound:
+    #         User_Account.create(id=userId, username=username)
+
+    #     db.session.commit()
