@@ -57,17 +57,15 @@ class User_Account(BaseMixin, db.Model):
         db.session.commit()
         return result
 
-    # @staticmethod
-    # def update(userId, **kw):
-    #     userIdMatches = User_Account.query.filter_by(id=userId).all()
-    #     matchFound = False
-    #     for each in userIdMatches:
-    #         if each.username != username:
-    #             db.session.delete(each)
-    #         else:
-    #             matchFound = True
-
-    #     if not matchFound:
-    #         User_Account.create(id=userId, username=username)
-
-    #     db.session.commit()
+    @staticmethod
+    def update(id, **kw):
+        user = User_Account.query.filter_by(id=userId).first()
+        for key in kw:
+            if key != "id":
+                setattr(user, key, kw[key])
+        db.session.commit()
+    
+    @staticmethod
+    def delete(id, **kw):
+        user = User_Account.query.filter_by(id=id).first()
+        user.deleteOne()
